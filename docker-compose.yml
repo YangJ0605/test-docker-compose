@@ -1,0 +1,30 @@
+version: '3.1'
+services:
+  # 定义我们的后端服务
+  newbackend:
+    # 定义构建方式：通过目标目录下的dockerfile构建
+    # build: ./node-dockerfile/Dockerfile
+    # image: mynode:0.0.3
+    build:
+      context: ./
+      dockerfile: node.Dockerfile
+    restart: always
+    container_name: newbackend
+
+  # 定义我们的nginx服务
+  nginx-host:
+    # 定义构建方式，这里表示通过本地镜像构建
+    # image: nginx
+    build: ./nginx-dockerfile
+    restart: always
+    # 定义我们需要挂载到docker容器中的内容
+    volumes:
+      - ./nginx-dockerfile/default.conf:/etc/nginx/conf.d/default.conf
+      - ./html:/usr/share/nginx/html
+    ports:
+      # 定义端口映射
+      - '3838:80'
+    links:
+      # 定义容器间的链接
+      - newbackend
+    container_name: nginx
